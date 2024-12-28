@@ -1,0 +1,34 @@
+type Token @entity {
+  id: ID!
+  tokenId: String!
+  genesisSupply: BigInt!
+  totalSupply: BigInt!
+  nftCount: Int!
+
+  utxos: [Utxo!] @derivedFrom(field: "token")
+  holders: [TokenHolder!] @derivedFrom(field: "token")
+}
+
+type Utxo @entity {
+  id: ID!
+  tokenId: String!
+  amount: BigInt!
+  commitment: String
+  capability: String
+  address: String!
+
+  token: Token!
+  holder: TokenHolder!
+}
+
+type TokenHolder @entity @index(fields: ["address", "tokenId"], unique: true) {
+  id: ID!
+
+  address: String!
+  tokenId: String!
+  amount: BigInt!
+  nftCount: Int!
+
+  token: Token!
+  utxos: [Utxo!] @derivedFrom(field: "holder")
+}
