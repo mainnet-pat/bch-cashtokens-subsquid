@@ -10,7 +10,7 @@ config({
 });
 
 // BchBatchProcessor is the class responsible for data retrieval and processing.
-import { BchBatchProcessor } from './bch-processor/src/processor.js';
+import { BchBatchProcessor } from '@subsquid/bch-processor';
 // TypeormDatabase is the class responsible for data storage.
 import { TypeormDatabase } from "@subsquid/typeorm-store";
 
@@ -141,9 +141,6 @@ processor.run(db, async (ctx) => {
       const fetchedUtxos: Record<string, Utxo> = (await ctx.store.findBy(Utxo, {
         id: In(utxoIds) as any,
       })).reduce((acc, utxo) => ({...acc,[utxo.id]: utxo}), {});
-      // const fetchedUtxos = (await ctx.store.findBy(Utxo, {
-      //   id: In(utxoIds) as any,
-      // }));
 
       for (const transaction of chunk) {
         // skip coinbase
@@ -152,17 +149,6 @@ processor.run(db, async (ctx) => {
         }
 
         const sourceOutputUtxos = transaction.inputs.map(input => fetchedUtxos[`${input.outpointTransactionHash}:${input.outpointIndex}`]).filter(utxo => utxo !== undefined);
-        //  transaction.inputs.filter(input => fetchedUtxos[`${input.outpointTransactionHash}:${input.outpointIndex}`]).map(input => fetchedUtxos[`${input.outpointTransactionHash}:${input.outpointIndex}`]).map(utxo => ({
-        //   address: utxo.address,
-        //   token: {
-        //     category: hexToBin(utxo.tokenId),
-        //     amount: utxo.amount,
-        //     nft: utxo.capability ? { capability: utxo.capability ?? undefined, commitment: utxo.commitment == null ? undefined : hexToBin(utxo.commitment) } : undefined,
-        //   },
-        //   index: Number(utxo.id.split(":")[1]),
-        //   outpointTransactionHash: utxo.id.split(":")[0]
-        // }));
-
         const hasTokens = transaction.outputs.some(output => output.token?.category) || sourceOutputUtxos.some(output => output.tokenId);
         if (!hasTokens) {
           continue;

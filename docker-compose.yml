@@ -24,7 +24,7 @@ services:
     ports:
       # GraphQL endpoint at port 4350
       - "127.0.0.1:4350:4350"
-    command: ["sqd", "serve:prod"]
+    command: ["sqd", "serve:prod", "--sql-statement-timeout=2500", "--max-response-size=5001"]
     depends_on:
       - db
     restart: always

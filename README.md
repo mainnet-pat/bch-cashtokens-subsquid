@@ -1,6 +1,6 @@
-# Arbius Marketplace Subsquid
+# BCH CashTokens Subsquid
 
-This squid captures all Marketplace and MarketplaceData contract events to represent the same state of the contracts as if they were queried via contract calls.
+This squid captures the current state of BCH CashTokens, token holders and token utxos
 
 Dependencies: Node.js, Docker.
 
@@ -32,15 +32,11 @@ A GraphiQL playground will be available at [localhost:4350/graphql](http://local
 # Cheatsheet
 
 ```
-npx squid-evm-typegen src/abi ../contract/artifacts/contracts/MarketplaceV1.sol/MarketplaceV1.json
-npx squid-evm-typegen src/abi ../contract/artifacts/contracts/MarketplaceDataV1.sol/MarketplaceDataV1.json
-
-
 npx squid-typeorm-codegen
 
 
 docker compose down -v && docker compose up -d db
-npx tsc && rm -rf db/migrations/* && npx squid-typeorm-migration generate
+npx tsc && rm -rf db/migrations/* && npx squid-typeorm-migration generate --esm true
 docker compose down -v && docker compose up -d db && sleep 2 && npx squid-typeorm-migration apply
 
 
